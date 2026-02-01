@@ -28,20 +28,26 @@ body{
 .card{
   background:rgba(255,255,255,0.15);
   backdrop-filter:blur(18px);
-  padding:35px;
-  border-radius:30px;
-  width:90%;
-  max-width:430px;
+
+  padding:28px;            /* 🔽 35 → 28 */
+  border-radius:26px;
+
+  width:48%;               /* 🔽 60% → 48% */
+  max-width:380px;         /* 🔽 430 → 380 */
+
   text-align:center;
   box-shadow:0 30px 70px rgba(0,0,0,0.4);
+
   transform: translateY(18px) scale(0.98);
   opacity:0;
   animation:cardIn 700ms cubic-bezier(.2,.9,.3,1) forwards;
+
   position:relative;
-  z-index:2; /* keep above particles */
+  z-index:2;
   will-change: transform;
   transition: transform 300ms cubic-bezier(.2,.9,.3,1);
 }
+
 
 @keyframes cardIn{
   to{ transform:none; opacity:1; }
@@ -193,4 +199,5 @@ button.pulse{ animation:pulse 2000ms infinite; }
 .card span{
   pointer-events:none;
 }
+
 

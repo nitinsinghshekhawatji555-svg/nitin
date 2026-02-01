@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Will You Be Mine?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{ --pink1:#ff3b6b; --pink2:#ff7aa3; --accent:#ffd6ff; --glass: rgba(255,255,255,0.06); --cardGlow: rgba(255,102,150,0.15); --gold:#ffd27a }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:'Poppins',sans-serif;background:radial-gradient(1200px 600px at 10% 10%, rgba(255,220,240,0.08), transparent 18%), linear-gradient(135deg,var(--pink1),var(--pink2));-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+    /* subtle vignette + grain */
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(60% 40% at 50% 30%, rgba(0,0,0,0.06), transparent 40%),linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.06));mix-blend-mode:multiply;z-index:0}
+    body::after{content:'';position:fixed;inset:0;pointer-events:none;background-image:repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0 1px, transparent 1px 6px);opacity:0.6;mix-blend-mode:overlay;z-index:0}
+
+    /* Background layers */
+    .bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .bg .blob{position:absolute;border-radius:50%;filter:blur(80px);mix-blend-mode:screen;opacity:0.9}
+    .bg .b1{width:48vmax;height:48vmax;left:-8vmax;top:-14vmax;background:radial-gradient(circle at 30% 30%, rgba(255,160,220,0.95), transparent 28%), radial-gradient(circle at 70% 70%, rgba(157,78,221,0.62), transparent 42%);animation:blobMove 14s ease-in-out infinite}
+    .bg .b2{width:44vmax;height:44vmax;right:-12vmax;top:-8vmax;background:radial-gradient(circle at 20% 20%, rgba(255,230,240,0.9), transparent 28%), radial-gradient(circle at 80% 80%, rgba(255,120,180,0.55), transparent 40%);animation:blobMove 12s ease-in-out infinite reverse}
+    .bg .b3{width:40vmax;height:40vmax;left:12vmax;bottom:-10vmax;background:radial-gradient(circle at 40% 40%, rgba(255,210,235,0.82), transparent 28%), radial-gradient(circle at 70% 70%, rgba(157,78,221,0.38), transparent 40%);animation:blobMove 18s ease-in-out infinite}
+    .bg .blob{transition:transform 800ms ease, opacity 800ms ease}
+
+    @keyframes blobMove{0%{transform:translateY(0) scale(1)}50%{transform:translateY(6vmin) scale(1.04)}100%{transform:translateY(0) scale(1)}}
+
+    /* floating hearts */
+    .bg .hearts{position:absolute;inset:0}
+    .bg .bg-heart{position:absolute;font-size:18px;opacity:0.0;transform:translateY(30vh) scale(.7);animation:floatUp 7s linear infinite}
+    @keyframes floatUp{0%{transform:translateY(30vh) scale(.7);opacity:0}10%{opacity:1}50%{opacity:0.95}100%{transform:translateY(-80vh) scale(1.1);opacity:0}}
+    .bg .bg-heart:nth-child(1){left:8%;animation-delay:0s;animation-duration:9s}
+    .bg .bg-heart:nth-child(2){left:18%;animation-delay:1s;animation-duration:8s}
+    .bg .bg-heart:nth-child(3){left:34%;animation-delay:2.2s;animation-duration:10s}
+    .bg .bg-heart:nth-child(4){left:50%;animation-delay:0.7s;animation-duration:9.2s}
+    .bg .bg-heart:nth-child(5){left:64%;animation-delay:3s;animation-duration:7.8s}
+    .bg .bg-heart:nth-child(6){left:78%;animation-delay:2.5s;animation-duration:9.5s}
+    .bg .bg-heart:nth-child(7){left:86%;animation-delay:4s;animation-duration:8.6s}
+
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .card{position:relative;z-index:2;background:linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.05));backdrop-filter:blur(14px);padding:48px;border-radius:28px;max-width:820px;width:100%;color:#fff;box-shadow:0 50px 120px rgba(0,0,0,.36);transition:transform .25s ease;transform-style:preserve-3d}
+    h1{font-size:2.8rem;margin:0 0 10px}
+    .sub{opacity:.95;margin-bottom:18px;font-size:1.1rem}
+
+    /* slider */
+    .slider{position:relative;height:360px;border-radius:18px;overflow:hidden;margin:20px 0;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))}
+    .slider .slide{position:absolute;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:140px;opacity:0;transform:scale(1);transition:opacity 900ms ease, transform 900ms ease;color:#fff}
+    .slider .slide.active{opacity:1;transform:scale(1.03)}
+
+    /* inline video in slider */
+    .slider .inline-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;z-index:3}
+    .slider.video-playing .slide{opacity:0;visibility:hidden}
+    .slider.video-playing .inline-video{display:block}
+
+    @media (max-width:480px){ .slider{height:220px} .slider .slide{font-size:72px} .card{padding:28px} }
+
+    /* proposal */
+    .proposal{margin-top:12px;text-align:center}
+    .btns{display:flex;gap:18px;justify-content:center;align-items:center;margin-top:18px}
+    .btn{padding:20px 36px;border-radius:40px;border:0;cursor:pointer;font-weight:800;font-size:1.15rem;min-width:160px;transition:transform .18s ease, box-shadow .18s ease}
+    .yes{background:linear-gradient(90deg,#ff90c5,#ff5fa0);color:#fff;box-shadow:0 18px 48px rgba(255,107,146,.22)}
+    .yes.pulse-forever{animation:yesPulse 2200ms ease-in-out infinite}
+    @keyframes yesPulse{0%{transform:translateY(0) scale(1); box-shadow:0 18px 48px rgba(255,107,146,.22)}50%{transform:translateY(-4px) scale(1.02); box-shadow:0 26px 64px rgba(255,92,147,.28)}100%{transform:translateY(0) scale(1); box-shadow:0 18px 48px rgba(255,107,146,.22)}}
+    .no{background:#fff;color:#ff4d6d;position:relative;border:2px solid rgba(255,77,109,0.08);} 
+    .btn:active{transform:scale(.98)}
+    .btn:focus{outline:none;box-shadow:0 0 0 4px rgba(255,150,190,0.16)}
+
+    .attempts{opacity:.9;margin-top:10px;font-size:.95rem}
+
+    #finalMsg{margin-top:16px;font-size:1rem;opacity:0;transform:scale(.98);transition:opacity .3s ease,transform .3s ease}
+    #finalMsg.show{opacity:1;transform:scale(1)}
+
+    /* confetti canvas */
+    #confetti{position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:1}
+
+    /* yes video overlay */
+    #yesVideo{position:fixed;left:0;top:0;width:100vw;height:100vh;object-fit:cover;z-index:4;display:none;pointer-events:auto}
+    .video-mode #yesVideo{display:block}
+
+    /* video picker (fallback) */
+    .video-picker{position:fixed;left:0;top:0;width:100vw;height:100vh;display:none;align-items:center;justify-content:center;z-index:6;background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6));}
+    .video-picker.show{display:flex}
+    .video-picker-inner{background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));padding:22px;border-radius:12px;color:#fff;text-align:center;max-width:460px}
+    .video-picker .choose{background:#fff;color:#ff4d6d;padding:10px 18px;border-radius:10px;border:none;margin-top:12px}
+    .video-picker .ghost{background:transparent;border:1px solid rgba(255,255,255,0.08);color:#fff}
+
+    /* love popup */
+    .love-popup{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:7;pointer-events:none;opacity:0;transition:opacity .25s ease}
+    .love-popup.show{opacity:1;pointer-events:auto}
+    .love-inner{background:transparent;text-align:center;padding:20px;border-radius:12px}
+    .love-text{font-size:3rem;color:#fff;font-weight:900;transform:scale(.6);opacity:0;display:inline-block;transition:transform .5s cubic-bezier(.2,.9,.3,1),opacity .5s;text-shadow:0 8px 30px rgba(255,80,140,0.18)}
+    .love-popup.show .love-text{transform:scale(1);opacity:1;animation:loveBounce 900ms ease}
+    @keyframes loveBounce{0%{transform:scale(.6) rotate(-6deg)}40%{transform:scale(1.12) rotate(4deg)}100%{transform:scale(1) rotate(0)} }
+    .love-text span{color:#ffd6ff}
+    .love-heart{position:absolute;font-size:20px;animation:floatHearts 1400ms linear forwards;opacity:1}
+    @keyframes floatHearts{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-140px) scale(.6);opacity:0}}
+    .love-inner .close{margin-top:10px;padding:8px 12px;border-radius:8px;border:none;background:rgba(255,255,255,0.9);color:#ff4d6d;font-weight:700}
+
+    /* big heart and heart-mode */
+    .big-heart{position:fixed;left:50%;top:50%;width:80vmin;height:auto;transform:translate(-50%,-50%) scale(.25);opacity:0;transition:transform 700ms cubic-bezier(.2,.9,.3,1),opacity 700ms;z-index:1;filter:drop-shadow(0 40px 80px rgba(255,100,150,0.12));}
+    @keyframes heartPop{0%{transform:translate(-50%,-50%) scale(.25)}60%{transform:translate(-50%,-50%) scale(1.06)}100%{transform:translate(-50%,-50%) scale(1)} }
+    .heart-mode .big-heart{transform:translate(-50%,-50%) scale(1);opacity:1;animation:heartPop 900ms cubic-bezier(.2,.9,.3,1)}
+
+    .heart-mode{background:linear-gradient(135deg,#ff9bd6,#ff6aa5) !important}
+    .heart-mode .bg{opacity:0.08;filter:blur(6px);transition:opacity .6s ease}
+    .heart-mode .card{box-shadow:0 40px 120px rgba(255,105,160,0.22);border-radius:30px;background:linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));}
+    /* subtle heartbeat on big heart */
+    @keyframes heartBeat{0%{transform:translate(-50%,-50%) scale(1)}30%{transform:translate(-50%,-50%) scale(1.04)}60%{transform:translate(-50%,-50%) scale(.98)}100%{transform:translate(-50%,-50%) scale(1)} }
+    .heart-mode .big-heart{animation:heartPop 900ms cubic-bezier(.2,.9,.3,1), heartBeat 2000ms 900ms infinite}
+
+
+    /* responsive */
+    @media (max-width:480px){.slider{height:160px}.card{padding:20px}}
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+  <video id="yesVideo" controls playsinline webkit-playsinline preload="auto" style="position:fixed;left:0;top:0;width:100vw;height:100vh;object-fit:cover;z-index:4;display:none;" aria-hidden="true"></video>
+  <div id="videoPicker" class="video-picker" aria-hidden="true">
+    <div class="video-picker-inner">
+      <p style="margin:0 0 10px">We couldn't play the video automatically. Please choose the MP4 file from your device or place the file named <code>Snapchat-2047145839.mp4</code> in this project folder.</p>
+      <button id="chooseVideoBtn" class="btn choose">Choose video</button>
+      <input type="file" id="videoFileInput" accept="video/*" style="display:none">
+      <div style="margin-top:8px"><button id="cancelChoose" class="btn choose ghost" style="display:none">Cancel</button></div>
+    </div>
+  </div>
+
+  <!-- LOVE POPUP -->
+  <div id="lovePopup" class="love-popup" aria-hidden="true">
+    <div class="love-inner">
+      <div class="love-text">I <span>LOVE</span> YOU 💖</div>
+      <div><button id="closeLove" class="btn close">Close</button></div>
+    </div>
+  </div>
+  <svg id="bigHeart" class="big-heart" viewBox="0 0 32 29.6" aria-hidden="true"><path d="M23.6,0c-2.9,0-5.4,1.6-6.6,4C15.8,1.6,13.3,0,10.4,0C4.7,0,0,4.7,0,10.4 c0,6.3,5.2,9.9,13.1,16.4l2.9,2.2l2.9-2.2C26.1,20.3,31.3,16.7,31.3,10.4C31.3,4.7,26.6,0,20.9,0z" fill="#ff6aa5"/></svg>
+  <div class="bg" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+    <div class="hearts">
+      <span class="bg-heart">💖</span>
+      <span class="bg-heart">💗</span>
+      <span class="bg-heart">💞</span>
+      <span class="bg-heart">💕</span>
+      <span class="bg-heart">💖</span>
+      <span class="bg-heart">💗</span>
+      <span class="bg-heart">💞</span>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="card" id="card">
+      <h1>Hey <span id="name"></span> 💜</h1>
+      <p class="sub">From my heart to this screen... Will you be my Valentine?</p>
+
+      <div class="slider" aria-hidden="true">
+        <video id="inlineVideo" class="inline-video" playsinline webkit-playsinline controls preload="auto" aria-hidden="true" style="display:none"></video>
+        <div class="slide active" role="img" aria-label="cute chick">🐥</div>
+        <div class="slide" role="img" aria-label="love bird">🥰</div>
+        <div class="slide" role="img" aria-label="heart">💖</div>
+      </div>
+
+      <div class="proposal" id="proposal">
+        <h2 style="margin:0 0 6px">Will you be mine forever? 💍</h2>
+        <div class="btns">
+          <button class="btn yes" id="yes">YES 💜</button>
+          <button class="btn no" id="no">NO 🙈</button>
+        </div>
+        <div class="attempts">It took <strong id="attemptCount">0</strong> tries to get here</div>
+        <div id="finalMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Typing name
+    const gfName = 'Mahi';
+    let ti=0;
+    function type(){ if(ti<gfName.length){ document.getElementById('name').textContent += gfName.charAt(ti); ti++; setTimeout(type,140)} }
+    type();
+
+    // add gentle pulse to YES button to draw attention
+    document.addEventListener('DOMContentLoaded', ()=>{ const y = document.getElementById('yes'); if(y){ y.classList.add('pulse-forever'); y.addEventListener('click', ()=>{ y.classList.remove('pulse-forever'); }); } });
+
+    // Slider (emoji slides)
+    const slides = document.querySelectorAll('.slider .slide'); let sidx=0;
+    setInterval(()=>{ slides[sidx].classList.remove('active'); sidx=(sidx+1)%slides.length; slides[sidx].classList.add('active') }, 2600);
+
+    // NO button evasive + attempts counter
+    const no = document.getElementById('no'); const yes = document.getElementById('yes'); const attemptSpan = document.getElementById('attemptCount');
+    let attempts = 0;
+    function moveNo(){
+      const card = document.getElementById('card'); const rect = card.getBoundingClientRect();
+      const bw = no.offsetWidth, bh = no.offsetHeight;
+      const padding = 16;
+      const minX = rect.left + padding, maxX = rect.right - padding - bw;
+      const minY = rect.top + padding, maxY = rect.bottom - padding - bh;
+      const x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+      const y = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+      no.style.position = 'absolute'; no.style.left = x + 'px'; no.style.top = y + 'px';
+      attempts++; attemptSpan.textContent = attempts;
+      // small wiggle
+      no.style.transform = 'translateY(-6px)'; setTimeout(()=>no.style.transform='',250);
+    }
+
+    no.addEventListener('mouseenter', moveNo);
+    no.addEventListener('click', moveNo);
+
+    // Card tilt
+    const card = document.getElementById('card');
+    card.addEventListener('mousemove', (e)=>{
+      const r = card.getBoundingClientRect(); const rx = (e.clientY - r.top - r.height/2)/ r.height * -12; const ry = (e.clientX - r.left - r.width/2)/ r.width * 12;
+      card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    });
+    card.addEventListener('mouseleave', ()=>{ card.style.transform = '' });
+
+    // Confetti (simple)
+    const canvas = document.getElementById('confetti'); const ctx = canvas.getContext('2d'); let cw=canvas.width=innerWidth, ch=canvas.height=innerHeight; window.addEventListener('resize', ()=>{cw=canvas.width=innerWidth; ch=canvas.height=innerHeight});
+    const confetti = [];
+    function spawnConfetti(x,y,count=40){ for(let i=0;i<count;i++){ confetti.push({x:x + (Math.random()*100-50), y:y + (Math.random()*100-50), vx:(Math.random()-0.5)*9, vy:(Math.random()* -6) - 2, size:6+Math.random()*12, color:['#ff9bd6','#ffd6ff','#fff2f7','#ff6aa5','#ffd27a','#fff1e0'][Math.floor(Math.random()*6)], life:80+Math.random()*40}) }}
+    function draw(){ ctx.clearRect(0,0,cw,ch); for(let i=confetti.length-1;i>=0;i--){ const p=confetti[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=0.25; p.life--; ctx.fillStyle=p.color; ctx.fillRect(p.x,p.y,p.size,p.size*0.9); if(p.y>ch+50||p.life<=0) confetti.splice(i,1); } requestAnimationFrame(draw); }
+    draw();
+
+    function showLovePopup(){
+      const popup = document.getElementById('lovePopup');
+      const closeBtn = document.getElementById('closeLove');
+      popup.classList.add('show');
+      // create floating hearts inside popup
+      for(let i=0;i<8;i++){
+        const h = document.createElement('div');
+        h.className = 'love-heart';
+        h.textContent = ['💖','💗','💞','💕'][Math.floor(Math.random()*4)];
+        h.style.left = (20 + Math.random()*60) + '%';
+        h.style.top = (50 + Math.random()*20) + '%';
+        h.style.fontSize = (14 + Math.random()*28) + 'px';
+        h.style.opacity = '1';
+        popup.appendChild(h);
+        setTimeout(()=>{ h.style.transform = 'translateY(-140px) scale(.6)'; h.style.opacity='0' }, 50);
+        setTimeout(()=> h.remove(), 1500);
+      }
+      // allow manual close and longer auto-hide (5s)
+      let hideTimeout = setTimeout(()=>{ popup.classList.remove('show'); Array.from(popup.querySelectorAll('.love-heart')).forEach(n=>n.remove()); }, 5000);
+      closeBtn.onclick = ()=>{ clearTimeout(hideTimeout); popup.classList.remove('show'); Array.from(popup.querySelectorAll('.love-heart')).forEach(n=>n.remove()); };
+    }
+
+
+
+
+    // play YES video (tries video folder first, then project root, then absolute file URL; falls back to file picker)
+    function playYesVideo(){
+      const video = document.getElementById('yesVideo');
+      const candidates = [
+        'video/Snapchat-2047145839.mp4',
+        'Snapchat-2047145839.mp4',
+        'file:///C:/Users/Asus/Downloads/Phone%20Link/Snapchat-2047145839.mp4'
+      ];
+
+      function showVideo(){ document.body.classList.add('video-mode'); video.style.display = 'block'; }
+
+      function tryPlay(i){
+        if(i >= candidates.length){
+          // last resort: show file picker so user can choose the file (works reliably)
+          const picker = document.getElementById('videoPicker'); picker.classList.add('show');
+          const fileInput = document.getElementById('videoFileInput');
+          const chooseBtn = document.getElementById('chooseVideoBtn');
+          const cancelBtn = document.getElementById('cancelChoose');
+
+          chooseBtn.onclick = ()=> fileInput.click();
+          cancelBtn.onclick = ()=>{ picker.classList.remove('show'); };
+
+          fileInput.onchange = (ev)=>{
+            const f = ev.target.files && ev.target.files[0];
+            if(!f) return;
+            video.src = URL.createObjectURL(f);
+            video.muted = false;
+            video.load();
+            video.play().then(()=>{ picker.classList.remove('show'); showVideo(); }).catch((err)=>{
+              console.warn('file play failed, trying muted', err);
+              video.muted = true;
+              video.play().then(()=>{ picker.classList.remove('show'); showVideo(); }).catch((e)=>{ console.warn('Video play failed', e); alert('Unable to play the selected video.'); });
+            });
+          };
+          return;
+        }
+
+        const src = candidates[i];
+        video.muted = false;
+        video.src = src;
+        video.load();
+        video.play().then(()=>{ showVideo(); }).catch(()=>{ tryPlay(i+1); });
+      }
+
+      tryPlay(0);
+
+      // clicking video pauses/closes it
+      video.onclick = ()=>{ video.pause(); video.style.display='none'; document.body.classList.remove('video-mode'); };
+      video.onended = ()=>{ video.style.display='none'; document.body.classList.remove('video-mode'); };
+    }
+
+    // play video inline inside the slider as first choice
+    function playInlineVideo(){
+      const inline = document.getElementById('inlineVideo');
+      const slider = document.querySelector('.slider');
+      const candidates = [ 'video/Snapchat-2047145839.mp4', 'Snapchat-2047145839.mp4', 'file:///C:/Users/Asus/Downloads/Phone%20Link/Snapchat-2047145839.mp4' ];
+
+      function showInline(){ slider.classList.add('video-playing'); inline.style.display='block'; inline.focus && inline.focus(); }
+
+      function tryPlay(i){
+        if(i >= candidates.length){
+          // fallback to file picker (existing overlay)
+          const picker = document.getElementById('videoPicker'); picker.classList.add('show');
+          const fileInput = document.getElementById('videoFileInput');
+          const chooseBtn = document.getElementById('chooseVideoBtn');
+          const cancelBtn = document.getElementById('cancelChoose');
+
+          chooseBtn.onclick = ()=> fileInput.click();
+          cancelBtn.onclick = ()=>{ picker.classList.remove('show'); };
+
+          fileInput.onchange = (ev)=>{
+            const f = ev.target.files && ev.target.files[0]; if(!f) return;
+            inline.src = URL.createObjectURL(f); inline.muted = false; inline.load(); inline.play().then(()=>{ picker.classList.remove('show'); showInline(); }).catch((err)=>{ inline.muted = true; inline.play().then(()=>{ picker.classList.remove('show'); showInline(); }).catch(()=>{ alert('Unable to play the selected video.'); }); });
+          };
+          return;
+        }
+
+        const src = candidates[i];
+        inline.muted = false;
+        inline.src = src;
+        inline.load();
+        inline.play().then(()=>{ showInline(); }).catch(()=>{ tryPlay(i+1); });
+      }
+
+      tryPlay(0);
+
+      // clicking or ended hides the inline video and cleans up
+      inline.onclick = ()=>{ inline.pause(); inline.style.display='none'; inline.src=''; slider.classList.remove('video-playing'); };
+      inline.onended = ()=>{ inline.style.display='none'; inline.src=''; slider.classList.remove('video-playing'); };
+    }
+
+    yes.addEventListener('click', ()=>{
+      const final = document.getElementById('finalMsg'); final.innerHTML = `<strong>Yay! 💜</strong><div style="margin-top:8px">You made me the happiest. It took <strong>${attempts}</strong> tries!</div>`; final.classList.add('show');
+
+      // switch site into heart mode (animated big heart + pink theme)
+      document.body.classList.add('heart-mode');
+
+      // confetti at center
+      const r = card.getBoundingClientRect(); spawnConfetti(r.left + r.width/2, r.top + r.height/2, 80);
+
+      // add heart burst elements inside card
+      for(let i=0;i<12;i++){ const sp=document.createElement('span'); sp.textContent='💜'; sp.style.position='absolute'; sp.style.left=(20+Math.random()*60)+'%'; sp.style.top=(10+Math.random()*20)+'px'; sp.style.fontSize=(12+Math.random()*22)+'px'; sp.style.transition='transform 900ms ease, opacity 900ms ease'; card.appendChild(sp); setTimeout(()=>{ sp.style.transform='translateY(-120px) scale(1.3)'; sp.style.opacity='0' },50); setTimeout(()=>sp.remove(),1000); }
+
+      // show animated "I love you" popup
+      showLovePopup();
+
+      // try to play inline in the slider; if inline can't autoplay, user will get picker
+      playInlineVideo();
+
+      // disable buttons
+      no.removeEventListener('mouseenter', moveNo); no.style.display='none'; yes.disabled=true;
+    });
+
+    // small accessibility: keyboard support
+    no.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') moveNo(); });
+
+  </script>
+</body>
+</html>

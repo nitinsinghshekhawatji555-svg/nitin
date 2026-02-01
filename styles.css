@@ -1,0 +1,196 @@
+/* External styles for Mahi 💜 My Forever */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins', sans-serif;
+}
+
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#7f00ff,#e100ff);
+  background-size:200% 200%;
+  animation:bgShift 12s ease infinite;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  color:#fff;
+}
+
+@keyframes bgShift{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+.card{
+  background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(18px);
+  padding:35px;
+  border-radius:30px;
+  width:90%;
+  max-width:430px;
+  text-align:center;
+  box-shadow:0 30px 70px rgba(0,0,0,0.4);
+  transform: translateY(18px) scale(0.98);
+  opacity:0;
+  animation:cardIn 700ms cubic-bezier(.2,.9,.3,1) forwards;
+  position:relative;
+  z-index:2; /* keep above particles */
+  will-change: transform;
+  transition: transform 300ms cubic-bezier(.2,.9,.3,1);
+}
+
+@keyframes cardIn{
+  to{ transform:none; opacity:1; }
+} 
+
+h1{
+  font-size:2.2rem;
+  margin-bottom:5px;
+}
+
+#name{
+  color:#ffd6ff;
+  padding-right:6px;
+  position:relative;
+}
+
+#name::after{
+  content:'|';
+  margin-left:6px;
+  opacity:1;
+  animation:blink 1s steps(1) infinite;
+}
+
+@keyframes blink{50%{opacity:0}}
+
+p{
+  font-size:1rem;
+  opacity:0.95;
+}
+
+/* Proposal paragraph style moved here */
+.proposal p{
+  font-size:0.9rem;
+  opacity:0.8;
+}
+
+button{
+  margin-top:20px;
+  padding:12px 30px;
+  border:none;
+  border-radius:40px;
+  background:linear-gradient(135deg,#c77dff,#9d4edd);
+  color:white;
+  font-size:1rem;
+  cursor:pointer;
+  box-shadow:0 10px 30px rgba(199,125,255,0.25);
+  transition: transform 300ms ease, box-shadow 300ms ease, background 300ms ease;
+  will-change: transform;
+}
+
+button:hover{
+  transform:translateY(-6px) scale(1.03);
+  box-shadow:0 20px 50px rgba(157,78,221,0.25);
+}
+
+button:active{ transform:scale(0.98); }
+
+button.pulse{ animation:pulse 2000ms infinite; }
+
+@keyframes pulse{
+  0%{ box-shadow:0 0 0 0 rgba(199,125,255,0.6); }
+  70%{ box-shadow:0 0 0 18px rgba(199,125,255,0); }
+  100%{ box-shadow:0 0 0 0 rgba(199,125,255,0); }
+}
+
+/* Slider */
+.slider{
+  margin-top:20px;
+  position:relative;
+  height:220px;
+  overflow:hidden;
+  border-radius:20px;
+}
+
+.slider img{
+  position:absolute;
+  left:0; top:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  border-radius:20px;
+  opacity:0;
+  transform:scale(1);
+  transition: opacity 1000ms ease, transform 1000ms ease;
+}
+
+.slider img.active{
+  opacity:1;
+  transform:scale(1.03);
+}
+
+/* Proposal */
+.proposal{
+  display:block; /* keep in flow but hidden via opacity */
+  opacity:0;
+  transform: translateY(18px) scale(0.98);
+  transition: opacity 450ms ease, transform 450ms ease;
+  margin-top:20px;
+  position:relative;
+}
+
+.proposal.visible{
+  opacity:1;
+  transform:none;
+}
+
+.yes{
+  background:#4CAF50;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.yes:hover{ transform:translateY(-6px) scale(1.03); box-shadow:0 20px 40px rgba(76,175,80,0.25); }
+
+.no{
+  background:#ff4d6d;
+  position:absolute;
+  right:6px;
+  top:55px;
+  transition: transform 300ms ease;
+  border:none;
+  padding:10px 16px;
+  border-radius:28px;
+  color:#fff;
+}
+
+.no:hover{ transform:translateY(-6px); }
+
+/* Final message */
+#finalMsg{
+  margin-top:15px;
+  font-size:1.1rem;
+  opacity:0;
+  transform:scale(0.98);
+  transition: opacity 400ms ease, transform 400ms ease;
+}
+
+#finalMsg.show{ opacity:1; transform:scale(1); }
+
+/* Particles canvas */
+#particles{
+  position:fixed;
+  left:0; top:0;
+  width:100vw;
+  height:100vh;
+  pointer-events:none;
+  z-index:1; /* below the card */
+}
+
+/* Small hearts created dynamically inside the card */
+.card span{
+  pointer-events:none;
+}
+
